@@ -22,7 +22,7 @@ Nome: Felepe Santos Paiva <br>
 Email: felipe.geo.uece@gmail.com
 
 Nome: Victor Matheus Bezerra de Sena <br>
-Email: 
+Email: victormatheus8888@gmail.com
 
 ## Tecnologias usadas
 
