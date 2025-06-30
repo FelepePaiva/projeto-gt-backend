@@ -259,4 +259,12 @@ export const updateProductByIdService = async (id, payload) => {
     await transaction.rollback();
     throw error;
   }
-}
+};
+
+export const removeProductByIdService = async (id) => {
+  const deletedCount = await Product.destroy({
+    where: { id }
+  });
+
+  return deletedCount > 0;
+};

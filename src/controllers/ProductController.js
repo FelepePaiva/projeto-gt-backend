@@ -1,4 +1,4 @@
-import { createProductService, getAllProductsService, getProductByIdService } from '../services/ProductService.js';
+import { createProductService, getAllProductsService, getProductByIdService, removeProductByIdService } from '../services/ProductService.js';
 
 export const createProduct = async (req, res) => {
   const productData = req.body;
@@ -45,5 +45,24 @@ export const updateProductById = async (req, res) => {
     console.error('Erro ao atualizar produto:', err);
     if (err.status === 404) return res.status(404).json({ msg: err.message });
     res.status(400).json({ msg: 'Erro ao processar atualização do produto' });
+  }
+};
+export const removeProductById = async (req, res) => {
+  const { id } = req.params;
+
+  if (!id || isNaN(Number(id))) {
+    return res.status(400).json({ msg: "ID inválido." });
+  }
+
+  try {
+    const deleted = await removeProductByIdService(id);
+
+    if (!deleted) {
+      return res.status(404).json({ msg: "Produto não encontrado." });
+    }
+
+    return res.status(204).send();
+  } catch (err) {
+    return res.status(500).json({ msg: "Erro ao remover produto.", error: err.message });
   }
 };
