@@ -6,7 +6,7 @@ Inclui autenticação JWT, rotas para usuários, categorias, produtos, etc.
 ---
 
 ## Sumário
-
+- [Desenvolvedores](#desenvolvedores)
 - [Tecnologias usadas](#tecnologias-usadas)
 - [Requisitos](#requisitos)
 - [Instalação](#instalacao)
@@ -17,6 +17,12 @@ Inclui autenticação JWT, rotas para usuários, categorias, produtos, etc.
 
 
 ---
+## Desenvolvedores
+Nome: Felepe Santos Paiva <br>
+Email: felipe.geo.uece@gmail.com
+
+Nome: Victor Matheus Bezerra de Sena <br>
+Email: 
 
 ## Tecnologias usadas
 
