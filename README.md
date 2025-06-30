@@ -138,15 +138,14 @@ Resposta de erro (400 Bad Request)
 ----
 PUT<br>
 curl -X PUT http://localhost:3001/v1/user/1 
-```json
-{
+```bash
   -H "Content-Type: application/json" 
   -H "Authorization: Bearer <seu_token>" 
   -d 
     "firstname": "user firstname",
     "surname": "user surname",
     "email": "user@mail.com"
-  }
+}
 ```
 Resposta de sucesso (204 No Content)
 (Sem corpo de resposta)
