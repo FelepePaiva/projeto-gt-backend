@@ -175,7 +175,7 @@ export const getProductByIdService = async (id) => {
     category_ids: json.categories.map(cat => cat.id),
     images: json.images.map(img => ({
       id: img.id,
-      content: img.path // Aqui você pode montar a URL real se quiser
+      content: img.path
     })),
     options: json.options
   };
@@ -192,13 +192,11 @@ export const updateProductByIdService = async (id, payload) => {
       category_ids = [], images = [], options = []
     } = payload;
 
-    // Atualizar produto principal
     await product.update({
       name, slug, description, price,
       price_with_discount, enabled, stock
     }, { transaction });
 
-    // Atualizar categorias (remover e recriar)
     await ProductCategory.destroy({ where: { product_id: id }, transaction });
     if (Array.isArray(category_ids)) {
       await ProductCategory.bulkCreate(
@@ -207,7 +205,6 @@ export const updateProductByIdService = async (id, payload) => {
       );
     }
 
-    // Atualizar imagens
     for (const img of images) {
       if (img.deleted && img.id) {
         await ProductImage.destroy({ where: { id: img.id, product_id: id }, transaction });
@@ -224,7 +221,6 @@ export const updateProductByIdService = async (id, payload) => {
       }
     }
 
-    // Atualizar opções
     for (const opt of options) {
       if (opt.deleted && opt.id) {
         await ProductOption.destroy({ where: { id: opt.id, product_id: id }, transaction });

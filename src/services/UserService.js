@@ -1,22 +1,15 @@
 import User from "../models/User.js";
 import bcrypt from 'bcrypt';
+import {HttpError} from '../errors/HttpError.js'
 
-export const addUserService = async (user) => {
+export const createUserService = async (user) => {
     const {firstname, surname, email, password, confirmPassword} = user;
 
-    if (!firstname || !surname || !email || !password || !confirmPassword)
-    {
-        throw new Error("Todos os campos são obrigatórios");
-    }
-    if (password !== confirmPassword)
-    {
-        throw new Error("As senhas não coincidem")
-    }
     const existingUser = await User.findOne({where: {email}});
 
     if (existingUser)
     {
-        throw new Error("O email já está cadastrado");
+        throw new HttpError(409, "O email já está cadastrado");
     }
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -24,14 +17,10 @@ export const addUserService = async (user) => {
     return newUser;
 }
 export const getUserByIdService = async (id) => {
-    if (!id || isNaN(Number(id)))
-    {
-        throw new Error("ID inválido. Por favor insira um número.")
-    }
     const existingUser = await User.findByPk(id);
     if (!existingUser)
     {
-        throw new Error("Usuário não encontrado")
+        throw new HttpError(404, "Usuário não encontrado")
     }
     const userToView = {
         id: existingUser.id,
@@ -44,17 +33,20 @@ export const getUserByIdService = async (id) => {
 export const updateUserByIdService = async (id, dataToUpdate) => {
     const existingUser = await User.findByPk(id);
 
-    if (!id || isNaN(Number(id)))
-    {
-        throw new Error("ID inválido. Por favor insira um número.")
-    }
     if(!existingUser)
     {
-        return null;
+        throw new HttpError(404, "Usuário não encontrado");
     }
-    existingUser.firstname = dataToUpdate.firstname;
-    existingUser.surname = dataToUpdate.surname;
-    existingUser.email = dataToUpdate.email;
+    if (dataToUpdate.firstname !== undefined) existingUser.firstname = dataToUpdate.firstname;
+    if (dataToUpdate.surname !== undefined) existingUser.surname = dataToUpdate.surname;
+    if (dataToUpdate.email !== undefined) existingUser.email = dataToUpdate.email;
+
+    if (dataToUpdate.password)
+    {
+        const hashedPassword = await bcrypt.hash(dataToUpdate.password, 10);
+        existingUser.password = hashedPassword;
+    }
+   
     await existingUser.save();
     return {
         id: existingUser.id,
@@ -64,15 +56,11 @@ export const updateUserByIdService = async (id, dataToUpdate) => {
     };
 }
 export const removeUserByIdService = async (id) => {
-    if (!id || isNaN(Number(id)))
-    {
-        throw new Error("ID inválido. Por favor insira um número.")
-    }
     const existingUser = await User.findByPk(id);
 
     if(!existingUser)
     {
-        return null;
+        throw new HttpError(404, "Usuário não encontrado")
     }
     await existingUser.destroy();
     return true;

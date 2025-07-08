@@ -1,85 +1,48 @@
-import { addUserService, getUserByIdService, updateUserByIdService, removeUserByIdService } from "../services/UserService.js";
+import {getUserByIdService, updateUserByIdService, removeUserByIdService, createUserService } from "../services/UserService.js";
 
-export const addUser = async (req, res) => {
-    const user = req.body;
+export const createUser = async (req, res, next) => {
     try
     {
-        const newUser = await addUserService(user);
-        res.status(201).json(newUser);
+      const newUser = await createUserService(req.body);
+      res.status(201).json(newUser)
     }
-    catch (error)
+    catch (err)
     {
-        res.status(400).json({msg: error.message});
+      next(err);
     }
-}
-export const getUserById = async (req, res) => {
+};
+export const getUserById = async (req, res, next) => {
     const {id} = req.params;
     try 
     {
         const user = await getUserByIdService(id);
         res.status(200).json(user);
     }
-    catch (error)
+    catch (err)
     {
-        if (error.message === "ID inválido. Por favor insira um número.")
-        {
-        return res.status(400).json({msg: "ID inválido. Por favor insira um número."});
-        }
-        if (error.message === "Usuário não encontrado")
-        {
-            return res.status(404).json({msg: "Usuário não encontrado"});
-        }
+      next(err)
     }
 }
-export const updateUserById = async (req, res) => {
+export const updateUserById = async (req, res, next) => {
   const { id } = req.params;
   const userData = req.body;
 
-  try {
-    if (!id || isNaN(Number(id))) 
-    {
-      return res.status(400).json({ msg: "ID inválido. Por favor insira um número." });
-    }
+  try {    
     const updatedUser = await updateUserByIdService(id, userData);
-    if (!updatedUser) 
-    {
-      return res.status(404).json({ msg: "Usuário não encontrado." });
-    }
-    if (Number(id) !== req.user.id) 
-    {
-      return res.status(401).json({ msg: "Você não tem permissão para atualizar este usuário." });
-    }
-    res.status(204).send();
-    } 
-    catch (error) {
-    console.error(error);
-    return res.status(500).json({ msg: "Erro interno no servidor." });
+    res.status(200).json(updatedUser);
+  } 
+    catch (err) {
+      next(err)
   }
 };
-export const removeUserById = async (req, res) => {
+export const removeUserById = async (req, res, next) => {
   const { id } = req.params;
 
-  try {
-    // Primeiro valida o ID
-    if (!id || isNaN(Number(id))) {
-      return res.status(400).json({ msg: "ID inválido. Por favor insira um número." });
-    }
-
-    // Depois verifica permissão
-    if (Number(id) !== req.user.id) {
-      return res.status(401).json({ msg: "Você não tem permissão para remover este usuário." });
-    }
-
-    // Tenta remover
-    const result = await removeUserByIdService(id);
-    if (result === null) {
-      return res.status(404).json({ msg: "Usuário não encontrado." });
-    }
-
+  try {   
+    await removeUserByIdService(id);
     return res.status(204).send();
-  } catch (error) {
-    console.log("Usuário encontrado:", error);
-    return res.status(500).json({ msg: "Erro interno no servidor." });
+  } catch (err) {
+    next(err)
   }
 };
 
